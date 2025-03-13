@@ -1,0 +1,48 @@
+<tool id="thredds" name="Access to data on a thredds server" version="0.1.0+galaxy0" profile="21.05">
+    <description>Get data with a thredds server</description>
+    <requirements>
+        <requirement type="package">owslib</requirement>
+        <requirement type="package">threddsclient</requirement>
+        <requirement type="package">netcdf4</requirement>
+    </requirements>
+    <command><![CDATA[
+            python3 $__tool_directory__/thredds.py --url $thredds_endpoint --file $file_name --ds $ds_name --lat_min $lat_min --lat_max $lat_max --lon_min $lon_min --lon_max $lon_max > $output
+        ]]>
+    </command>
+    <!--  -->
+    <code file="dynamicOptions.py"/> 
+    <inputs>
+        <param name="thredds_endpoint" type="hidden" value="https://thredds.icare.univ-lille.fr/thredds/catalog/catalog.xml" label="thredds"/>
+
+        <!-- TEST -->
+        <!-- <param name="test_en_dur" type="text" value="https://thredds.icare.univ-lille.fr/thredds/catalog/S5P/S5P_CLOUD_NRTI_D3/2024/catalog.xml" label="thredds"/>
+        <param name="file_name" type="select" label="File" refresh_on_change="true" dynamic_options="get_file(thredds_endpoint, test_en_dur)"/>
+        <param name="ds_name" type="select" label="Dataset"  dynamic_options="get_ds(thredds_endpoint, test_en_dur, file_name)"/> -->
+        <!-- TEST -->
+
+        <param name="catalog" type="select" refresh_on_change="true" label="thredds catalog" dynamic_options="get_subcats(thredds_endpoint, catalog)"/> 
+        <param name="file_name" type="select" label="File" refresh_on_change="true" dynamic_options="get_file(thredds_endpoint, catalog)"/>
+        <param name="ds_name" type="select" label="Dataset"  dynamic_options="get_ds(thredds_endpoint, catalog, file_name)"/>
+
+        <param name="lat_min" type="integer" min="-90" max="90" value="-10" label="Latitude min" />
+        <param name="lat_max" type="integer" min="-90" max="90" value="10" label="Latitude max" /> 
+        <param name="lon_min" type="integer" min="-180" max="180" value="-10" label="Longitude min" />
+        <param name="lon_max" type="integer" min="-180" max="180" value="10" label="Longitude max" />
+    </inputs>
+    <outputs>
+        <data name="output" format="netcdf" label="${ds_name.value_label}_lat_${lat_min.value}_${lat_max.value}_lon_${lon_min.value}_${lon_max.value}"/> 
+    </outputs>
+    <tests>
+        <test expect_num_outputs="1">
+            <param name="parameter_name" value="TEST" />
+        </test>
+    </tests>
+    <help><![CDATA[
+        HELP THREDDS TOOL
+        ]]>
+    </help>
+    <citations>
+        <citation type="bibtex">author = {ICARE}</citation>
+    </citations>
+</tool>
+    
